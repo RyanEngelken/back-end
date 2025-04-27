@@ -15,9 +15,8 @@ router.get('/songs', async (req, res) => {
         const songs = await Song.find({});
         res.json(songs);
         console.log(songs);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error retrieving songs from database');
+    } catch (err) {
+        console.error(err);
     }
 }
 );  
@@ -29,11 +28,35 @@ router.post('/songs', async (req, res) => {
         await song.save();
         res.status(201).json(song);
         console.log(song); 
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error saving song to database');
+    } catch (err) {
+        console.error(err);
     }
 });
+
+//grab a single song in the list
+router.get('/songs/:id', async (req, res) => {
+    try {
+        const song = await Song.findById(req.params.id);
+        res.json(song);
+    } catch(err) {
+        res.status(400).send(err)
+    }
+});
+
+
+//update is to update an existing record/resource/database entry.. it just uses a put request
+router.put("/songs/:id", async (req, res) => {
+    //first we need to find and uupdate the song the front end wants up to update
+    //we need to request the id of the song from the reueset and find it in the database and update it
+    try {
+        const song = req.body; //this is the new song object that we want to update to
+        await Song.updateOne ({_id: req.params.id},song)
+        res.sendStatus(204)
+    }
+    catch (err) {
+        res.status(400).send(err)
+    }
+})
 
 //all requests that usually use an api start with /api... so the url would be localhost:3000/api/songs
 //this says before using anything else, use this router first
